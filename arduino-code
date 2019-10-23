@@ -1,0 +1,55 @@
+#include <SoftwareSerial.h>
+
+int temp=0;
+int r=0;
+int rly =8; 
+
+SoftwareSerial sim(10, 11);
+void setup() 
+{
+   pinMode(rly,OUTPUT);
+  digitalWrite(rly,LOW);
+  delay(7000);                        //delay for 7 seconds to make sure the modules get the signal
+  Serial.begin(115200);
+  Serial.println("System Started...");
+  sim.begin(115200);
+  sim.println("AT");                 //Once the handshake test is successful, it will back to OK
+  delay(1000);
+  sim.println("AT+CMGF=1");         // Configuring TEXT mode
+  delay(1000);
+  sim.println("AT+CNMI=2,2,0,0,0"); // Decides how newly arrived SMS messages should be handled
+  delay(1000);
+}
+
+void loop() 
+{
+  while(temp==0)
+  {
+    if(sim.find("Start"))
+    {
+      temp=1;
+    }
+    
+  }
+  if(temp==1)
+  {
+    relay();
+  }
+} 
+  
+void relay()
+{
+ 
+  if(r%2==0)
+  {
+     Serial.println("On");
+    digitalWrite(rly,HIGH);
+  }
+  else
+  {
+ 4    Serial.println("Off");
+    digitalWrite(rly,LOW);
+  }
+  r++;
+  temp=0;
+}
